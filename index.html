@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RADIO MAMBO</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000"/>
+  <link rel="apple-touch-icon" href="iconomambo.png" />
+  <style>
+    body {
+      margin: 0;
+      background: url('radiomambo.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .radio-player {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(0,0,0,0.6);
+      padding: 10px 20px;
+      border-radius: 30px;
+    }
+
+    .play-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      background: #1e1e1e;
+      color: #fff;
+      font-size: 30px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .spectrum {
+      display: flex;
+      gap: 4px;
+      height: 40px;
+      align-items: end;
+    }
+
+    .bar {
+      width: 6px;
+      background: #4ade80;
+      height: 10%;
+      transition: height 0.2s ease-out;
+    }
+
+    .social-bubbles {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 999;
+    }
+
+    .social-bubbles a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .social-bubbles a:hover {
+      transform: scale(1.15);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+
+    .social-bubbles img {
+      width: 28px;
+      height: 28px;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="social-bubbles">
+    <a href="https://www.facebook.com/profile.php?id=61566406267706" target="_blank" title="Facebook">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook"
+        style="filter: invert(29%) sepia(94%) saturate(549%) hue-rotate(187deg) brightness(91%) contrast(89%);">
+    </a>
+    <a href="https://www.instagram.com/radiomambo5?igsh=bjNtMm0yODZhbzY3&utm_source=qr" target="_blank" title="Instagram">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram"
+        style="filter: invert(46%) sepia(58%) saturate(493%) hue-rotate(313deg) brightness(94%) contrast(90%);">
+    </a>
+    <a href="https://www.tiktok.com/@radiomambo5?_t=ZP-8x0fjY7f5xO&_r=1" target="_blank" title="TikTok">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok"
+        style="filter: invert(10%) sepia(89%) saturate(674%) hue-rotate(165deg) brightness(92%) contrast(96%);">
+    </a>
+  </div>
+
+  <div class="radio-player">
+    <button class="play-btn" id="playPauseBtn">▶</button>
+    <div class="spectrum" id="spectrum"></div>
+  </div>
+
+  <audio id="audio" crossorigin="anonymous" src="https://stream.zeno.fm/utwmdnuwlafuv"></audio>
+
+  <script>
+    const audio = document.getElementById('audio');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const spectrum = document.getElementById('spectrum');
+    let isPlaying = false;
+
+    const bars = [];
+    for (let i = 0; i < 16; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      spectrum.appendChild(bar);
+      bars.push(bar);
+    }
+
+    let animationId;
+
+    function animateFakeSpectrum() {
+      bars.forEach((bar) => {
+        const height = Math.random() * 100;
+        bar.style.height = height + '%';
+      });
+      animationId = requestAnimationFrame(animateFakeSpectrum);
+    }
+
+    playPauseBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        audio.play().then(() => {
+          playPauseBtn.textContent = '⏸';
+          animateFakeSpectrum();
+          isPlaying = true;
+        });
+      } else {
+        audio.pause();
+        playPauseBtn.textContent = '▶';
+        cancelAnimationFrame(animationId);
+        isPlaying = false;
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
